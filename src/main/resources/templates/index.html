@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Product Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .product-card {
+            max-width: 300px;
+            margin: auto;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            height: 200px;
+            object-fit: cover;
+            background-color: #e9ecef;
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .product-price {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .quantity-controls button {
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .quantity-display {
+            width: 50px;
+            text-align: center;
+            border: none;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Explore Our Products</h1>
+    <div class="row justify-content-center">
+        <!-- Product 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="card product-card" data-name="Smartphone" data-price="15000" data-image="/images/smartphone.jpg">
+                <img src="/images/smartphone.jpg" class="card-img-top product-image" alt="Smartphone">
+                <div class="card-body text-center">
+                    <h5 class="product-title">Smartphone</h5>
+                    <p class="product-price">Price: $150.00</p>
+                    <div class="quantity-controls my-3">
+                        <button class="btn btn-outline-secondary decrement">-</button>
+                        <input type="text" class="quantity-display form-control" value="1" readonly>
+                        <button class="btn btn-outline-secondary increment">+</button>
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 checkout-button">Checkout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="col-md-4 mb-4">
+            <div class="card product-card" data-name="Headphones" data-price="5000" data-image="/images/headphones.jpg">
+                <img src="/images/headphones.jpg" class="card-img-top product-image" alt="Headphones">
+                <div class="card-body text-center">
+                    <h5 class="product-title">Headphones</h5>
+                    <p class="product-price">Price: $50.00</p>
+                    <div class="quantity-controls my-3">
+                        <button class="btn btn-outline-secondary decrement">-</button>
+                        <input type="text" class="quantity-display form-control" value="1" readonly>
+                        <button class="btn btn-outline-secondary increment">+</button>
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 checkout-button">Checkout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="col-md-4 mb-4">
+            <div class="card product-card" data-name="Laptop" data-price="75000" data-image="/images/laptop.jpg">
+                <img src="/images/laptop.jpg" class="card-img-top product-image" alt="Laptop">
+                <div class="card-body text-center">
+                    <h5 class="product-title">Laptop</h5>
+                    <p class="product-price">Price: $750.00</p>
+                    <div class="quantity-controls my-3">
+                        <button class="btn btn-outline-secondary decrement">-</button>
+                        <input type="text" class="quantity-display form-control" value="1" readonly>
+                        <button class="btn btn-outline-secondary increment">+</button>
+                    </div>
+                    <button class="btn btn-primary btn-lg w-100 checkout-button">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const stripe = Stripe("pk_test_51QNt6TBtLo3QmqAZZewDNzwDWTVtXOnM5l7OOfbVVVUJjl7QoslbwvNKpxrNkMMCI0Rakuao4qkPTyr9RkbhzLg600q6KXdcCN");
+
+    document.querySelectorAll(".product-card").forEach(card => {
+    const decrementBtn = card.querySelector(".decrement");
+    const incrementBtn = card.querySelector(".increment");
+    const quantityDisplay = card.querySelector(".quantity-display");
+    const productPriceDisplay = card.querySelector(".product-price");
+    const productPriceInCents = parseInt(card.dataset.price); // Price in cents
+
+    // Quantity decrement logic
+    decrementBtn.addEventListener("click", () => {
+        let quantity = parseInt(quantityDisplay.value);
+        if (quantity > 1) {
+            quantity -= 1;
+            quantityDisplay.value = quantity;
+
+            // Update the price display
+            const totalPrice = (productPriceInCents * quantity) / 100;
+            productPriceDisplay.textContent = `Price: $${totalPrice.toFixed(2)}`;
+        }
+    });
+
+    // Quantity increment logic
+    incrementBtn.addEventListener("click", () => {
+        let quantity = parseInt(quantityDisplay.value);
+        quantity += 1;
+        quantityDisplay.value = quantity;
+
+        // Update the price display
+        const totalPrice = (productPriceInCents * quantity) / 100;
+        productPriceDisplay.textContent = `Price: $${totalPrice.toFixed(2)}`;
+    });
+
+    // Checkout button logic
+    card.querySelector(".checkout-button").addEventListener("click", async () => {
+        const productName = card.dataset.name; // Product name
+        const quantity = parseInt(quantityDisplay.value); // Quantity selected
+
+        try {
+            // Create the DTO object to match backend fields
+            const createPaymentRequest = {
+                name: productName, // Product name
+                amount: productPriceInCents, // Total amount in cents (Stripe expects cents)
+                quantity // Quantity
+            };
+
+            // Send request to backend
+            const response = await fetch("/product/v1/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(createPaymentRequest)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Assuming the backend responds with the sessionId and httpStatus
+            const stripeResponse = await response.json();
+
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({ sessionId: stripeResponse.sessionId });
+            if (result.error) {
+                console.error("Stripe Checkout Error:", result.error.message);
+            }
+        } catch (error) {
+            console.error("Error during checkout:", error);
+        }
+    });
+});
+
+</script>
+
+</body>
+</html>
